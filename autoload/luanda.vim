@@ -58,6 +58,9 @@ function! {s:ns}#complete(findstart, base) "{{{
   let ret = []
   let lns = s:getluadict()
   let base = strpart(getline('.'), s:getpos(1), col('.') - 1)
+  if stridx(base, '..')
+    let base = split(base, '\v\.\.')[1]
+  endif
   for ns in split(base, '\v\.')
     if has_key(lns, ns)
       if type(lns[ns]) != type({})
