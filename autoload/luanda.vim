@@ -30,10 +30,13 @@ lua << EOF
   end
   return ret
   end
-  trace(_ENV, vim.eval('d'), 0);
+  local d = vim.eval('d')
+  d['_G'] = trace(_ENV or _G, d, 0)
+  if _ENV then
+    d['_ENV'] = d
+  end
 EOF
-let d['_G'] = d
-return extend({'_ENV': d}, d)
+return d
 endfunction "}}}
 function! s:getluadict() "{{{
   if !exists('s:_dict')
@@ -75,7 +78,7 @@ function! {s:ns}#complete(findstart, base) "{{{
     endif
     let kind = 'v'
     if type(lns[k]) == type({})
-      call add(ret, {'word': k, 'kind': kind, 'menu': 'class'})
+      call add(ret, {'word': k, 'kind': kind, 'menu': 'table'})
     else
       let t = lns[k]
       if t == 'function'
